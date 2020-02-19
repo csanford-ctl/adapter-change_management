@@ -156,7 +156,7 @@ class ServiceNowConnector {
 
   /**
    * @memberof ServiceNowConnector
-   * @method get
+   * @method getRecord
    * @summary Calls ServiceNow GET API
    * @description Call the ServiceNow GET API. Sets the API call's method and query,
    *   then calls this.sendRequest(). In a production environment, this method
@@ -168,7 +168,7 @@ class ServiceNowConnector {
    *   Will be HTML text if hibernating instance.
    * @param {error} callback.error - The error property of callback.
    */
-  get(callback) {
+  getRecord(callback) {
     let getCallOptions = this.options;
     getCallOptions.method = 'GET';
     getCallOptions.query = 'sysparm_limit=1';
