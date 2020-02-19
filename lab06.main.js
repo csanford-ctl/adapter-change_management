@@ -146,31 +146,6 @@ class ServiceNowAdapter extends EventEmitter {
 
   /**
    * @memberof ServiceNowAdapter
-   * @method parseChangeTicket
-   * @summary Convert ServiceNow Change Ticket
-   * @description Parses and convers the ServiceNow response change ticket
-   * object into a changeRequest object we're using.
-   *
-   * @param {object} fullTicket - The original full ServiceNow ticket.
-   */
-  parseChangeTicket(fullTicket)
-  {
-	log.spam(`Full Ticket: ${JSON.stringify(fullTicket)}`)
-	let stubTicket = {
-		change_ticket_number: fullTicket.number,
-		change_ticket_key: fullTicket.sys_id,
-		active: fullTicket.active,
-		priority: fullTicket.priority,
-		description: fullTicket.description,
-		work_start: fullTicket.work_start,
-		work_end: fullTicket.work_end
-	}
-	log.spam(`Stub Ticket: ${JSON.stringify(stubTicket)}`)
-	return stubTicket;
-  }
-
-  /**
-   * @memberof ServiceNowAdapter
    * @method getRecord
    * @summary Get ServiceNow Record
    * @description Retrieves a record from ServiceNow.
@@ -178,27 +153,12 @@ class ServiceNowAdapter extends EventEmitter {
    * @param {ServiceNowAdapter~requestCallback} callback - The callback that
    *   handles the response.
    */
-	getRecord(callback) {
-		/**
-		* The function is a wrapper for this.connector's get() method.
-		*/
-		this.connector.getRecord((response, error) => {
-			let parsedResults = response;
-			if (response && response.body) {
-				let responseObj = JSON.parse(response.body);
-				let results = responseObj.result;
-				parsedResults = [];
-				results.forEach((res) => {
-					parsedResults.push(this.parseChangeTicket(res));
-				})
-			}
-			else
-			{
-				log.error('There was an error getting a ticket: ' + error);
-			}
-			callback(parsedResults, error);
-		});
-	}
+  getRecord(callback) {
+    /**
+     * The function is a wrapper for this.connector's get() method.
+     */
+     this.connector.getRecord(callback);
+  }
 
   /**
    * @memberof ServiceNowAdapter
@@ -213,19 +173,7 @@ class ServiceNowAdapter extends EventEmitter {
     /**
      * The function is a wrapper for this.connector's post() method.
      */
-     this.connector.postRecord((response, error) => {
-		 let parsedResponse = response;
-		 if (response && response.body)
-		 {
-			 let parsedTicket = JSON.parse(response.body);
-			 parsedResponse = this.parseChangeTicket(parsedTicket.result);
-		 }
-		 else
-		 {
-			 log.error('There was an error creating the ticket: ' + error);
-		 }
-		 callback(parsedResponse, error);
-	 });
+     this.connector.postRecord(callback);
   }
 }
 

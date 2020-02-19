@@ -88,7 +88,6 @@ class ServiceNowConnector {
         } else {
             callbackData = response;
         }
-
         return callback(callbackData, callbackError)
     }
 
@@ -177,7 +176,7 @@ class ServiceNowConnector {
 
     /**
      * @memberof ServiceNowConnector
-     * @method post
+     * @method postRecord
      * @description Call the ServiceNow POST API. Sets the API call's method,
      *   then calls sendRequest().
      *
@@ -186,7 +185,7 @@ class ServiceNowConnector {
      *   Will be HTML text if hibernating instance.
      * @param {error} callback.error - The error property of callback.
      */
-    post(callback) {
+    postRecord(callback) {
         let callOptions = this.options;
         callOptions.method = 'POST';
         this.sendRequest(callOptions, (results, error) => callback(results, error));
