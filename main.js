@@ -183,18 +183,18 @@ class ServiceNowAdapter extends EventEmitter {
 		* The function is a wrapper for this.connector's get() method.
 		*/
 		this.connector.getRecord((response, error) => {
-			let parsedResults = response;
-			if (response && response.body) {
+			let parsedResults = null;
+			if (error) {
+				log.error(`Error fetching record from ServiceNow: ${error}`);
+			} else if (response && response.body) {
 				let responseObj = JSON.parse(response.body);
 				let results = responseObj.result;
 				parsedResults = [];
 				results.forEach((res) => {
 					parsedResults.push(this.parseChangeTicket(res));
-				})
-			}
-			else
-			{
-				log.error('There was an error getting a ticket: ' + error);
+				});
+			} else {
+				log.error(`Unknown error fetching record.\nResponse: ${response}\nError: ${error}`);
 			}
 			callback(parsedResults, error);
 		});
@@ -214,16 +214,16 @@ class ServiceNowAdapter extends EventEmitter {
      * The function is a wrapper for this.connector's post() method.
      */
      this.connector.postRecord((response, error) => {
-		 let parsedResponse = response;
-		 if (response && response.body)
+		 let parsedResponse = null;
+		 if (error) {
+			 log.error(`Error creating ServiceNow record: ${error}`);
+		 } else if (response && response.body)
 		 {
 			 let parsedTicket = JSON.parse(response.body);
 			 parsedResponse = this.parseChangeTicket(parsedTicket.result);
-		 }
-		 else
-		 {
-			 log.error('There was an error creating the ticket: ' + error);
-		 }
+		 } else {
+			log.error(`Unknown error creating record.\nResponse: ${response}\nError: ${error}`);
+		}
 		 callback(parsedResponse, error);
 	 });
   }
