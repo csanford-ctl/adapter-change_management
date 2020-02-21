@@ -187,12 +187,17 @@ class ServiceNowAdapter extends EventEmitter {
 			if (error) {
 				log.error(`Error fetching record from ServiceNow: ${error}`);
 			} else if (response && response.body) {
-				let responseObj = JSON.parse(response.body);
-				let results = responseObj.result;
-				parsedResults = [];
-				results.forEach((res) => {
-					parsedResults.push(this.parseChangeTicket(res));
-				});
+				try {
+					let responseObj = JSON.parse(response.body);
+					let results = responseObj.result;
+					// parsedResults = [];
+					// results.forEach((res) => {
+					// 	parsedResults.push(this.parseChangeTicket(res));
+					// });
+					parsedResults = results.map(res => this.parseChangeTicket(res));
+				} catch (ex) {
+					log.error(`Error parsing ServiceNow response: ${ex}`);
+				}
 			} else {
 				log.error(`Unknown error fetching record.\nResponse: ${response}\nError: ${error}`);
 			}
@@ -219,8 +224,12 @@ class ServiceNowAdapter extends EventEmitter {
 			 log.error(`Error creating ServiceNow record: ${error}`);
 		 } else if (response && response.body)
 		 {
-			 let parsedTicket = JSON.parse(response.body);
-			 parsedResponse = this.parseChangeTicket(parsedTicket.result);
+			 try {
+				let parsedTicket = JSON.parse(response.body);
+				parsedResponse = this.parseChangeTicket(parsedTicket.result);
+			 } catch (ex) {
+				 log.error(`Error parsing ServiceNow response: ${ex}`);
+			 }
 		 } else {
 			log.error(`Unknown error creating record.\nResponse: ${response}\nError: ${error}`);
 		}
